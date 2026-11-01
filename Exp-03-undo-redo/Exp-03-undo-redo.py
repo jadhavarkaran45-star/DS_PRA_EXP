@@ -1,40 +1,75 @@
-class TextEditor:
-    def __init__(self):
-        self.current_document_state = ""
-        self.undo_stack = []
-        self.redo_stack = []
+undo_stack = []
+redo_stack = []
 
-    def make_change(self, new_content):
-        self.undo_stack.append(self.current_document_state)
-        self.current_document_state = new_content
-        self.redo_stack = []
-        self.display_document_state()
-
-    def undo_action(self):
-        if self.undo_stack:
-            self.redo_stack.append(self.current_document_state)
-            self.current_document_state = self.undo_stack.pop()
-            self.display_document_state()
-        else:
-            print("Nothing to undo.")
-
-    def redo_action(self):
-        if self.redo_stack:
-            self.undo_stack.append(self.current_document_state)
-            self.current_document_state = self.redo_stack.pop()
-            self.display_document_state()
-        else:
-            print("Nothing to redo.")
-
-    def display_document_state(self):
-        print(f"Current Document: '{self.current_document_state}'")
+document = ""
 
 
-editor = TextEditor()
+def make_change(new_text):
+    global document
 
-editor.make_change("Hello")
-editor.make_change("Hello World")
-editor.undo_action()
-editor.make_change("Hello Python")
-editor.undo_action()
-editor.redo_action()
+    undo_stack.append(document)
+    document = new_text
+    redo_stack.clear()
+
+    print("Change made successfully.")
+
+
+def undo():
+    global document
+
+    if len(undo_stack) == 0:
+        print("Nothing to undo.")
+    else:
+        redo_stack.append(document)
+        document = undo_stack.pop()
+
+        print("Undo performed successfully.")
+
+
+def redo():
+    global document
+
+    if len(redo_stack) == 0:
+        print("Nothing to redo.")
+    else:
+        undo_stack.append(document)
+        document = redo_stack.pop()
+
+        print("Redo performed successfully.")
+
+
+def display_document():
+    print("\nCurrent Document State:")
+    print(document)
+
+
+while True:
+
+    print("\n----- TEXT EDITOR -----")
+    print("1. Make a Change")
+    print("2. Undo")
+    print("3. Redo")
+    print("4. Display Document")
+    print("5. Exit")
+
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+        new_text = input("Enter new document text: ")
+        make_change(new_text)
+
+    elif choice == "2":
+        undo()
+
+    elif choice == "3":
+        redo()
+
+    elif choice == "4":
+        display_document()
+
+    elif choice == "5":
+        print("Program terminated.")
+        break
+
+    else:
+        print("Invalid choice.")
